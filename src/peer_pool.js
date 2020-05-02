@@ -97,7 +97,8 @@ class PeerPool extends EventEmitter {
 			maxPeerDiscoveryResponseLength: this._peerPoolConfig
 				.maxPeerDiscoveryResponseLength,
 			rateCalculationInterval: this._peerPoolConfig.rateCalculationInterval,
-			wsMaxPayload: this._peerPoolConfig.wsMaxPayload,
+			wsMaxPayloadInbound: this._peerPoolConfig.wsMaxPayloadInbound,
+			wsMaxPayloadOutbound: this._peerPoolConfig.wsMaxPayloadOutbound,
 			maxPeerInfoSize: this._peerPoolConfig.maxPeerInfoSize,
 			secret: this._peerPoolConfig.secret,
 		};

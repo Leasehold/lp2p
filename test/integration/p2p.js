@@ -1877,7 +1877,7 @@ describe('Integration tests for P2P library', () => {
 		});
 	});
 
-	describe('Fully connected network with a custom maximum payload', () => {
+	describe.only('Fully connected network with a custom maximum payload', () => {
 		let dataLargerThanMaxPayload;
 
 		beforeEach(async () => {
@@ -1918,7 +1918,8 @@ describe('Integration tests for P2P library', () => {
 							'2768b267ae621a9ed3b3034e2e8a1bed40895c621bbb1bbd613d92b9d24e54b5',
 						nonce: `O2wTkjqplHII${nodePort}`,
 					},
-					wsMaxPayload: 5000,
+					wsMaxPayloadOutbound: 5000,
+					wsMaxPayloadInbound: 5000,
 				});
 			});
 

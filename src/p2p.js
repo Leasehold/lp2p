@@ -92,7 +92,8 @@ const DEFAULT_SEND_PEER_LIMIT = 24;
 const DEFAULT_WS_MAX_MESSAGE_RATE = 100;
 const DEFAULT_WS_MAX_MESSAGE_RATE_PENALTY = 100;
 const DEFAULT_RATE_CALCULATION_INTERVAL = 1000;
-const DEFAULT_WS_MAX_PAYLOAD = 3048576; // Size in bytes
+const DEFAULT_WS_MAX_PAYLOAD_OUTBOUND = 3000000; // Size in bytes
+const DEFAULT_WS_MAX_PAYLOAD_INBOUND = 40000; // Size in bytes
 
 const BASE_10_RADIX = 10;
 const DEFAULT_MAX_OUTBOUND_CONNECTIONS = 20;
@@ -104,7 +105,7 @@ const DEFAULT_PEER_PROTECTION_FOR_USEFULNESS = 0.068;
 const DEFAULT_PEER_PROTECTION_FOR_LONGEVITY = 0.5;
 const DEFAULT_MIN_PEER_DISCOVERY_THRESHOLD = 100;
 const DEFAULT_MAX_PEER_DISCOVERY_RESPONSE_LENGTH = 1000;
-const DEFAULT_MAX_PEER_INFO_SIZE = 20480; // Size in bytes
+const DEFAULT_MAX_PEER_INFO_SIZE = 20000; // Size in bytes
 
 const SECRET_BYTE_LENGTH = 4;
 const DEFAULT_RANDOM_SECRET = crypto.randomBytes(SECRET_BYTE_LENGTH).readUInt32BE(0);
@@ -137,9 +138,9 @@ class P2P extends EventEmitter {
 		this._httpServer = http.createServer();
 		this._scServer = attach(this._httpServer, {
 			wsEngineServerOptions: {
-				maxPayload: config.wsMaxPayload
-					? config.wsMaxPayload
-					: DEFAULT_WS_MAX_PAYLOAD,
+				maxPayload: config.wsMaxPayloadInbound
+					? config.wsMaxPayloadInbound
+					: DEFAULT_WS_MAX_PAYLOAD_INBOUND,
 			},
 		});
 
@@ -330,9 +331,12 @@ class P2P extends EventEmitter {
 		this._peerPool = new PeerPool({
 			connectTimeout: config.connectTimeout,
 			ackTimeout: config.ackTimeout,
-			wsMaxPayload: config.wsMaxPayload
-				? config.wsMaxPayload
-				: DEFAULT_WS_MAX_PAYLOAD,
+			wsMaxPayloadOutbound: config.wsMaxPayloadOutbound
+				? config.wsMaxPayloadOutbound
+				: DEFAULT_WS_MAX_PAYLOAD_OUTBOUND,
+			wsMaxPayloadInbound: config.wsMaxPayloadInbound
+				? config.wsMaxPayloadInbound
+				: DEFAULT_WS_MAX_PAYLOAD_INBOUND,
 			peerSelectionForSend: config.peerSelectionForSend
 				? config.peerSelectionForSend
 				: selectPeersForSend,
@@ -899,7 +903,8 @@ module.exports = {
   DEFAULT_WS_MAX_MESSAGE_RATE,
   DEFAULT_WS_MAX_MESSAGE_RATE_PENALTY,
   DEFAULT_RATE_CALCULATION_INTERVAL,
-  DEFAULT_WS_MAX_PAYLOAD,
+  DEFAULT_WS_MAX_PAYLOAD_OUTBOUND,
+  DEFAULT_WS_MAX_PAYLOAD_INBOUND,
   DEFAULT_MAX_OUTBOUND_CONNECTIONS,
   DEFAULT_MAX_INBOUND_CONNECTIONS,
   DEFAULT_OUTBOUND_SHUFFLE_INTERVAL,

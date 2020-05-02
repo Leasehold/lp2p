@@ -98,7 +98,7 @@ class OutboundPeer extends Peer {
 			multiplex: false,
 			autoConnect: false,
 			autoReconnect: false,
-			maxPayload: this._peerConfig.wsMaxPayload,
+			maxPayload: this._peerConfig.wsMaxPayloadOutbound,
 		};
 
 		const outboundSocket = socketClusterClient.create(clientOptions);
