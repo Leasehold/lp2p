@@ -159,7 +159,7 @@ class OutboundPeer extends Peer {
 
 		outboundSocket.on(
 			EVENT_PING,
-			(res) => {
+			(data, res) => {
 				res(undefined, RESPONSE_PONG);
 			},
 		);
