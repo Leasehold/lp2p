@@ -148,13 +148,13 @@ describe('Integration tests for P2P library', () => {
 				});
 			});
 			await Promise.all(p2pNodeList.map(async p2p => await p2p.start()));
-			await wait(200);
+			await wait(600);
 		});
 
 		describe('Peer discovery', () => {
 			it('should discover all peers in the network after a few cycles of discovery', async () => {
 				// Wait for a few cycles of discovery.
-				await wait(3500);
+				await wait(3000);
 
 				for (let p2p of p2pNodeList) {
 					const peerPorts = p2p
