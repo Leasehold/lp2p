@@ -109,7 +109,7 @@ class PeerPool extends EventEmitter {
 		this._maxInboundConnections = peerPoolConfig.maxInboundConnections;
 		this._sendPeerLimit = peerPoolConfig.sendPeerLimit;
 		this._outboundShuffleIntervalId = setInterval(() => {
-			this._evictPeer(OutboundPeer);
+			this._evictPeer(PEER_KIND_OUTBOUND);
 		}, peerPoolConfig.outboundShuffleInterval);
 
 		// This needs to be an arrow function so that it can be used as a listener.
@@ -339,9 +339,9 @@ class PeerPool extends EventEmitter {
 	}
 
 	addInboundPeer(peerInfo, socket) {
-		const inboundPeers = this.getPeers(InboundPeer);
+		const inboundPeers = this.getPeers(PEER_KIND_INBOUND);
 		if (inboundPeers.length >= this._maxInboundConnections) {
-			this._evictPeer(InboundPeer);
+			this._evictPeer(PEER_KIND_INBOUND);
 		}
 
 		const peer = new InboundPeer(peerInfo, socket, {
@@ -485,7 +485,7 @@ class PeerPool extends EventEmitter {
 	}
 
 	_selectPeersForEviction() {
-		const peers = [...this.getPeers(InboundPeer)].filter(peer =>
+		const peers = [...this.getPeers(PEER_KIND_INBOUND)].filter(peer =>
 			this._peerLists.whitelisted.every(
 				p => constructPeerIdFromPeerInfo(p) !== peer.id,
 			),
@@ -547,7 +547,7 @@ class PeerPool extends EventEmitter {
 			return;
 		}
 
-		if (kind === OutboundPeer) {
+		if (kind === PEER_KIND_OUTBOUND) {
 			const selectedPeer = shuffle(
 				peers.filter(peer =>
 					this._peerLists.fixedPeers.every(
@@ -564,7 +564,7 @@ class PeerPool extends EventEmitter {
 			}
 		}
 
-		if (kind === InboundPeer) {
+		if (kind === PEER_KIND_INBOUND) {
 			const evictionCandidates = this._selectPeersForEviction();
 			const peerToEvict = shuffle(evictionCandidates)[0];
 			if (peerToEvict) {
