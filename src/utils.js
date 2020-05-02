@@ -12,7 +12,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { hash } = require('@liskhq/lisk-cryptography'); // TODO 2222
+const crypto = require('crypto');
 const { isIPv4 } = require('net');
 
 const SECRET_BUFFER_LENGTH = 4;
@@ -33,6 +33,12 @@ const NETWORK = {
 const PEER_TYPE = {
 	NEW_PEER: 'newPeer',
 	TRIED_PEER: 'triedPeer',
+};
+
+const hash = (data) => {
+	const dataHash = crypto.createHash('sha256');
+	dataHash.update(data);
+	return dataHash.digest();
 };
 
 const getIPGroup = (address, groupNumber) => {
@@ -189,6 +195,7 @@ const constructPeerIdFromPeerInfo = (peerInfo) =>
 
 module.exports = {
 	PEER_TYPE,
+	hash,
 	getIPGroup,
 	getIPBytes,
 	isPrivate,

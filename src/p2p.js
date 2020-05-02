@@ -13,7 +13,7 @@
  *
  */
 
-const { getRandomBytes } = require('@liskhq/lisk-cryptography');
+const crypto = require('crypto');
 const { EventEmitter } = require('events');
 const http = require('http');
 
@@ -107,9 +107,7 @@ const DEFAULT_MAX_PEER_DISCOVERY_RESPONSE_LENGTH = 1000;
 const DEFAULT_MAX_PEER_INFO_SIZE = 20480; // Size in bytes
 
 const SECRET_BYTE_LENGTH = 4;
-const DEFAULT_RANDOM_SECRET = getRandomBytes(
-	SECRET_BYTE_LENGTH,
-).readUInt32BE(0);
+const DEFAULT_RANDOM_SECRET = crypto.randomBytes(SECRET_BYTE_LENGTH).readUInt32BE(0);
 
 const selectRandomPeerSample = (peerList, count) => shuffle(peerList).slice(0, count);
 
