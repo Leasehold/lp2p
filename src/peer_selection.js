@@ -12,10 +12,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// tslint:disable-next-line no-require-imports
-const shuffle = require('lodash.shuffle');
 
-/* tslint:disable: readonly-keyword*/
+const shuffle = require('lodash.shuffle');
 
 const getUniquePeersbyIp = (peerList) => {
 	const peerMap = new Map();
