@@ -1877,7 +1877,7 @@ describe('Integration tests for P2P library', () => {
 		});
 	});
 
-	describe.only('Fully connected network with a custom maximum payload', () => {
+	describe('Fully connected network with a custom maximum payload', () => {
 		let dataLargerThanMaxPayload;
 
 		beforeEach(async () => {
@@ -1924,7 +1924,7 @@ describe('Integration tests for P2P library', () => {
 			});
 
 			await Promise.all(p2pNodeList.map(async p2p => await p2p.start()));
-			await wait(600);
+			await wait(2000);
 		});
 
 		afterEach(async () => {
@@ -1990,7 +1990,7 @@ describe('Integration tests for P2P library', () => {
 					data: dataLargerThanMaxPayload,
 				});
 
-				await wait(1000);
+				await wait(2000);
 
 				const firstPeerDisconnectedList =
 					closedPeers.get(firstP2PNode.nodeInfo.wsPort) || [];
