@@ -36,6 +36,7 @@ const EVENT_CONNECT_ABORT_OUTBOUND = 'connectAbortOutbound';
 const EVENT_CLOSE_OUTBOUND = 'closeOutbound';
 const EVENT_OUTBOUND_SOCKET_ERROR = 'outboundSocketError';
 const RESPONSE_PONG = 'pong';
+const PEER_KIND_OUTBOUND = 'outbound';
 
 const socketErrorStatusCodes = {
 	...socketClusterClient.SCClientSocket.errorStatuses,
@@ -45,6 +46,7 @@ const socketErrorStatusCodes = {
 class OutboundPeer extends Peer {
 	constructor(peerInfo, peerConfig) {
 		super(peerInfo, peerConfig);
+		this.kind = PEER_KIND_OUTBOUND;
 	}
 
 	set socket(scClientSocket) {
@@ -208,5 +210,6 @@ module.exports = {
   EVENT_CLOSE_OUTBOUND,
   EVENT_OUTBOUND_SOCKET_ERROR,
   RESPONSE_PONG,
+	PEER_KIND_OUTBOUND,
 	OutboundPeer,
 };

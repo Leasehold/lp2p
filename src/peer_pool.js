@@ -42,6 +42,8 @@ const {
 	EVENT_REQUEST_RECEIVED,
 	EVENT_UNBAN_PEER,
 	EVENT_UPDATED_PEER_INFO,
+	PEER_KIND_OUTBOUND,
+	PEER_KIND_INBOUND,
 	InboundPeer,
 	OutboundPeer,
 	Peer,
@@ -59,10 +61,6 @@ const INTENTIONAL_DISCONNECT_STATUS_CODE = 1000;
 
 // TODO: Move to events.ts.
 const EVENT_FAILED_TO_SEND_MESSAGE = 'failedToSendMessage';
-
-// TODO: Move these to constants.ts
-const PEER_KIND_OUTBOUND = 'outbound';
-const PEER_KIND_INBOUND = 'inbound';
 
 const PROTECTION_CATEGORY = {
 	NET_GROUP: 'netgroup',
@@ -252,8 +250,7 @@ class PeerPool extends EventEmitter {
 	send(message) {
 		const listOfPeerInfo = [...this._peerMap.values()].map((peer) => ({
 			...(peer.peerInfo),
-			kind:
-				peer instanceof OutboundPeer ? PEER_KIND_OUTBOUND : PEER_KIND_INBOUND,
+			kind: peer.kind,
 		}));
 		// This function can be customized so we should pass as much info as possible.
 		const selectedPeers = this._peerSelectForSend({
@@ -385,12 +382,12 @@ class PeerPool extends EventEmitter {
 	getPeersCountPerKind() {
 		return [...this._peerMap.values()].reduce(
 			(prev, peer) => {
-				if (peer instanceof OutboundPeer) {
+				if (peer.kind === PEER_KIND_OUTBOUND) {
 					return {
 						outboundCount: prev.outboundCount + 1,
 						inboundCount: prev.inboundCount,
 					};
-				} else if (peer instanceof InboundPeer) {
+				} else if (peer.kind === PEER_KIND_INBOUND) {
 					return {
 						outboundCount: prev.outboundCount,
 						inboundCount: prev.inboundCount + 1,
@@ -420,14 +417,14 @@ class PeerPool extends EventEmitter {
 	getPeers(kind) {
 		const peers = [...this._peerMap.values()];
 		if (kind) {
-			return peers.filter(peer => peer instanceof kind);
+			return peers.filter(peer => peer.kind === kind);
 		}
 
 		return peers;
 	}
 
 	getUniqueOutboundConnectedPeers() {
-		return getUniquePeersbyIp(this.getAllConnectedPeerInfos(OutboundPeer));
+		return getUniquePeersbyIp(this.getAllConnectedPeerInfos(PEER_KIND_OUTBOUND));
 	}
 
 	getAllConnectedPeerInfos(kind) {
@@ -438,7 +435,7 @@ class PeerPool extends EventEmitter {
 		const peers = [...this._peerMap.values()];
 		if (kind) {
 			return peers.filter(
-				peer => peer instanceof kind && peer.state === ConnectionState.OPEN,
+				peer => peer.kind === kind && peer.state === ConnectionState.OPEN,
 			);
 		}
 

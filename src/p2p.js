@@ -453,8 +453,8 @@ class P2P extends EventEmitter {
 		}
 	}
 
-	getConnectedPeers() {
-		return this._peerPool.getAllConnectedPeerInfos();
+	getConnectedPeers(kind) {
+		return this._peerPool.getAllConnectedPeerInfos(kind);
 	}
 
 	getUniqueOutboundConnectedPeers() {

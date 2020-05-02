@@ -32,6 +32,7 @@ const EVENT_PING = 'ping';
 
 const DEFAULT_PING_INTERVAL_MAX = 60000;
 const DEFAULT_PING_INTERVAL_MIN = 20000;
+const PEER_KIND_INBOUND = 'inbound';
 
 const getRandomPingDelay = () =>
 	Math.random() * (DEFAULT_PING_INTERVAL_MAX - DEFAULT_PING_INTERVAL_MIN) +
@@ -40,6 +41,7 @@ const getRandomPingDelay = () =>
 class InboundPeer extends Peer {
 	constructor(peerInfo, peerSocket, peerConfig) {
 		super(peerInfo, peerConfig);
+		this.kind = PEER_KIND_INBOUND;
 		this._handleInboundSocketError = (error) => {
 			this.emit(EVENT_INBOUND_SOCKET_ERROR, error);
 		};
@@ -123,5 +125,6 @@ module.exports = {
 	EVENT_CLOSE_INBOUND,
 	EVENT_INBOUND_SOCKET_ERROR,
 	EVENT_PING,
+	PEER_KIND_INBOUND,
 	InboundPeer,
 };
