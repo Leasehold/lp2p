@@ -126,10 +126,10 @@ describe('Integration tests for P2P library', () => {
 				return new P2P({
 					seedPeers,
 					wsEngine: 'ws',
-					connectTimeout: 200,
-					ackTimeout: 200,
+					connectTimeout: 1000,
+					ackTimeout: 1000,
 					peerBanTime: 100,
-					populatorInterval: 300,
+					populatorInterval: 500,
 					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 					maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 					nodeInfo: {
@@ -148,13 +148,13 @@ describe('Integration tests for P2P library', () => {
 				});
 			});
 			await Promise.all(p2pNodeList.map(async p2p => await p2p.start()));
-			await wait(800);
+			await wait(700);
 		});
 
 		describe('Peer discovery', () => {
 			it('should discover all peers in the network after a few cycles of discovery', async () => {
 				// Wait for a few cycles of discovery.
-				await wait(2000);
+				await wait(4000);
 
 				for (let p2p of p2pNodeList) {
 					const peerPorts = [...new Set(
@@ -208,7 +208,7 @@ describe('Integration tests for P2P library', () => {
 				};
 				firstP2PNode.applyPenalty(peerPenalty);
 				// Wait for ban time to expire and peer to be re-discovered
-				await wait(1000);
+				await wait(2000);
 				const updatedConnectedPeers = firstP2PNode.getConnectedPeers();
 
 				expect(updatedConnectedPeers.map(peer => peer.wsPort)).to.include(
@@ -321,7 +321,7 @@ describe('Integration tests for P2P library', () => {
 					for (let i = 0; i < TOTAL_SENDS; i++) {
 						randomP2PNode.send({ event: 'bar', data: i });
 					}
-					await wait(100);
+					await wait(2000);
 
 					expect(collectedMessages).to.not.to.be.empty;
 					for (let receivedMessageData of collectedMessages) {
@@ -399,7 +399,7 @@ describe('Integration tests for P2P library', () => {
 
 				const nodePort = NETWORK_START_PORT + index;
 				return new P2P({
-					connectTimeout: 100,
+					connectTimeout: 200,
 					ackTimeout: 200,
 					rateCalculationInterval: 10000,
 					seedPeers,
@@ -530,7 +530,6 @@ describe('Integration tests for P2P library', () => {
 								nodePort: p2p.nodeInfo.wsPort,
 								requestProcedure: request.procedure,
 								requestData: request.data,
-								requestPeerId: request.peerId,
 							});
 						}
 					});
@@ -553,9 +552,6 @@ describe('Integration tests for P2P library', () => {
 				expect(response.data)
 					.to.have.property('requestData')
 					.which.is.equal('bar');
-				expect(response.data)
-					.to.have.property('requestPeerId')
-					.which.is.equal(`127.0.0.1:${secondP2PNode.nodeInfo.wsPort}`);
 			});
 
 			// Check for even distribution of requests across the network. Account for an error margin.
@@ -823,7 +819,7 @@ describe('Integration tests for P2P library', () => {
 					targetPeerId,
 				);
 
-				await wait(100);
+				await wait(300);
 
 				expect(collectedMessages.length).to.equal(1);
 				expect(collectedMessages[0])
@@ -1386,7 +1382,7 @@ describe('Integration tests for P2P library', () => {
 					firstP2PNode.send({ event: 'bar', data: i });
 				}
 
-				await wait(100);
+				await wait(200);
 
 				expect(collectedMessages).to.not.to.be.empty;
 				for (let receivedMessageData of collectedMessages) {
@@ -1800,22 +1796,6 @@ describe('Integration tests for P2P library', () => {
 				number: undefined,
 			},
 		];
-		const serverSocketPrototypeBackup = cloneDeep(SCServerSocket.prototype);
-
-		before(async () => {
-			const serverSocketPrototype = SCServerSocket.prototype;
-			const realResetPongTimeoutFunction = serverSocketPrototype._resetPongTimeout;
-			serverSocketPrototype._resetPongTimeout = function () {
-				const queryObject = url.parse(this.request.url, true).query;
-				let ipSuffix = queryObject.wsPort - 5000 + 10;
-				this.remoteAddress = `127.0.0.${ipSuffix}`;
-				return realResetPongTimeoutFunction.apply(this, arguments);
-			};
-		});
-
-		after(async () => {
-			SCServerSocket.prototype = serverSocketPrototypeBackup;
-		});
 
 		describe('blacklisting', () => {
 			const blacklistedPeers = [

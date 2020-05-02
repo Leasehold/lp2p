@@ -17,5 +17,5 @@
 
 for i in $( seq $1 $2 ); 
 do 
-   sudo ifconfig lo0 alias "127.0.0.$i";
+   sudo route add -host "127.0.0.$i" dev lo
 done
