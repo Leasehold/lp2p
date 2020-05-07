@@ -1408,7 +1408,7 @@ describe('Integration tests for P2P library', () => {
 		});
 	});
 
-	describe('Partially connected network of 4 nodes: All nodes launch at the same time. The custom fields that are passed in nodeinfo is captured by other nodes.', () => {
+	describe('Partially connected network of 4 nodes: All nodes launch at the same time. The custom fields that are passed in node info is captured by other nodes.', () => {
 		beforeEach(async () => {
 			p2pNodeList = [...Array(NETWORK_PEER_COUNT).keys()].map(index => {
 				// Each node will have the previous node in the sequence as a seed peer except the first node.
@@ -1456,8 +1456,8 @@ describe('Integration tests for P2P library', () => {
 			await wait(1000);
 		});
 
-		describe('all the nodes should be able to communicate and receive custom fields passed in nodeinfo', () => {
-			it('should have tried peers with custom test field "modules" that was passed as nodeinfo', () => {
+		describe('all the nodes should be able to communicate and receive custom fields passed in node info', () => {
+			it('should have tried peers with custom test field "modules" that was passed as node info', () => {
 				for (let p2p of p2pNodeList) {
 					const triedPeers = p2p['_peerBook'].triedPeers;
 					const newPeers = p2p['_peerBook'].newPeers;
@@ -1510,7 +1510,7 @@ describe('Integration tests for P2P library', () => {
 		const ALL_NODE_PORTS_WITH_LIMIT = [
 			...new Array(NETWORK_PEER_COUNT_WITH_LIMIT).keys(),
 		].map(index => NETWORK_START_PORT + index);
-		const POPULATOR_INTERVAL_WITH_LIMIT = 50;
+		const POPULATOR_INTERVAL_WITH_LIMIT = 150;
 
 		beforeEach(async () => {
 			p2pNodeList = [...new Array(NETWORK_PEER_COUNT_WITH_LIMIT).keys()].map(
@@ -1527,8 +1527,8 @@ describe('Integration tests for P2P library', () => {
 
 					const nodePort = NETWORK_START_PORT + index;
 					return new P2P({
-						connectTimeout: 200,
-						ackTimeout: 200,
+						connectTimeout: 500,
+						ackTimeout: 500,
 						seedPeers,
 						wsEngine: 'ws',
 						populatorInterval: POPULATOR_INTERVAL_WITH_LIMIT,
@@ -1554,7 +1554,7 @@ describe('Integration tests for P2P library', () => {
 				},
 			);
 			await Promise.all(p2pNodeList.map(async p2p => await p2p.start()));
-			await wait(1800);
+			await wait(8000);
 		});
 
 		afterEach(async () => {
@@ -1695,7 +1695,7 @@ describe('Integration tests for P2P library', () => {
 						) {
 							propagatedMessages.set(p2p.nodeInfo.wsPort, message);
 							// Simulate some kind of delay; e.g. this like like verifying a block before propagation.
-							await wait(10);
+							await wait(20);
 							p2p.send({ event: 'propagate', data: message.data + 1 });
 						}
 					});
@@ -1709,7 +1709,7 @@ describe('Integration tests for P2P library', () => {
 				await wait(50);
 
 				expect(propagatedMessages.size).to.be.eql(30);
-				for (var value of propagatedMessages.values()) {
+				for (let value of propagatedMessages.values()) {
 					expect(value).to.have.property('event');
 					expect(value.event).to.be.equal('propagate');
 					expect(value).to.have.property('data');

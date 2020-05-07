@@ -53,12 +53,10 @@ const selectPeersForSend = (input) => {
 	// tslint:disable: no-magic-numbers
 	const halfPeerLimit = Math.round(peerLimit / 2);
 
-	// TODO: Get outbound string from constants.ts file.
 	const outboundPeers = shuffledPeers.filter(
 		(peerInfo) => peerInfo.kind === 'outbound',
 	);
 
-	// TODO: Get inbound string from constants.ts file.
 	const inboundPeers = shuffledPeers.filter(
 		(peerInfo) => peerInfo.kind === 'inbound',
 	);

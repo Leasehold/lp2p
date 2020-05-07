@@ -44,13 +44,6 @@ class RPCResponseError extends Error {
 	}
 }
 
-class FetchPeerStatusError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'FetchPeerStatusError';
-	}
-}
-
 class InvalidRPCResponseError extends Error {
 	constructor(message) {
 		super(message);
@@ -118,7 +111,6 @@ module.exports = {
 	PeerInboundHandshakeError,
 	PeerOutboundConnectionError,
 	RPCResponseError,
-	FetchPeerStatusError,
 	InvalidRPCResponseError,
 	RPCResponseAlreadySentError,
 	InvalidPeerError,

@@ -82,6 +82,22 @@ const initializeLongPeerInfoList = () => {
 	return peerInfos;
 };
 
+const initializePeerInfoListWithSuffix = (ipSuffix, qty) => {
+	let peerInfos = [];
+	for (let i = 0; i < qty; i++) {
+		peerInfos.push({
+			ipAddress: `${i % 255}.${ipSuffix}`,
+			wsPort: 5000 + (i % 40000),
+			height: 645980,
+			kind: i % 4 === 0 ? 'outbound' : 'inbound',
+			isDiscoveredPeer: false,
+			version: '1.1.1',
+			protocolVersion: '1.1',
+		});
+	}
+	return peerInfos;
+};
+
 const initializePeerList = () => {
 	return initializePeerInfoList().map(
 		(peerInfo) =>
@@ -99,5 +115,6 @@ const initializePeerList = () => {
 module.exports = {
 	initializePeerInfoList,
 	initializeLongPeerInfoList,
+	initializePeerInfoListWithSuffix,
 	initializePeerList,
 };

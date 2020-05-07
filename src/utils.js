@@ -118,11 +118,9 @@ const getNetgroup = (address, secret) => {
 	return hash(netgroupBytes).readUInt32BE(0);
 };
 
-// TODO: Source address to be included in hash for later version
-const getBucket = (options) => {
-	const { secret, targetAddress, peerType } = options;
+const getBucketId = (options) => {
+	const { secret, targetAddress, peerType, bucketCount } = options;
 	const firstMod = peerType === PEER_TYPE.NEW_PEER ? BYTES_16 : BYTES_4;
-	const secondMod = peerType === PEER_TYPE.NEW_PEER ? BYTES_128 : BYTES_64;
 	const secretBytes = Buffer.alloc(SECRET_BUFFER_LENGTH);
 	secretBytes.writeUInt32BE(secret, 0);
 	const network = getNetwork(targetAddress);
@@ -146,7 +144,7 @@ const getBucket = (options) => {
 	if (network !== NETWORK.NET_IPV4) {
 		return (
 			hash(Buffer.concat([secretBytes, networkBytes])).readUInt32BE(0) %
-			secondMod
+			bucketCount
 		);
 	}
 
@@ -187,7 +185,7 @@ const getBucket = (options) => {
 		kBytes,
 	]);
 
-	return hash(bucketBytes).readUInt32BE(0) % secondMod;
+	return hash(bucketBytes).readUInt32BE(0) % bucketCount;
 };
 
 const constructPeerIdFromPeerInfo = (peerInfo) =>
@@ -202,6 +200,6 @@ module.exports = {
 	isLocal,
 	getNetwork,
 	getNetgroup,
-	getBucket,
+	getBucketId,
 	constructPeerIdFromPeerInfo,
 };

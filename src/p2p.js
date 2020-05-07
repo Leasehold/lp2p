@@ -23,7 +23,7 @@ const url = require('url');
 
 const { REMOTE_RPC_GET_PEERS_LIST } = require('./peer');
 
-const { PeerBook } = require('./peer_directory');
+const { PeerBook } = require('./peer_book');
 
 const {
 	DUPLICATE_CONNECTION,
