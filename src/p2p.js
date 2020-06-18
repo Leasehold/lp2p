@@ -543,6 +543,7 @@ class P2P extends EventEmitter {
 
 					return;
 				}
+
 				const queryObject = url.parse(socket.request.url, true).query;
 
 				if (queryObject.nonce === this._nodeInfo.nonce) {

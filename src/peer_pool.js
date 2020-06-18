@@ -296,22 +296,21 @@ class PeerPool extends EventEmitter {
 		// Try to connect to disconnected peers without including the fixed ones which are specially treated thereafter
 		const disconnectedNewPeers = newPeers.filter(
 			newPeer =>
-				!this._peerMap.has(constructPeerIdFromPeerInfo(newPeer)) ||
+				!this._peerMap.has(constructPeerIdFromPeerInfo(newPeer)) &&
 				!fixedPeers
 					.map(fixedPeer => fixedPeer.ipAddress)
 					.includes(newPeer.ipAddress),
 		);
 		const disconnectedTriedPeers = triedPeers.filter(
 			triedPeer =>
-				!this._peerMap.has(constructPeerIdFromPeerInfo(triedPeer)) ||
+				!this._peerMap.has(constructPeerIdFromPeerInfo(triedPeer)) &&
 				!fixedPeers
 					.map(fixedPeer => fixedPeer.ipAddress)
 					.includes(triedPeer.ipAddress),
 		);
 		const { outboundCount } = this.getPeersCountPerKind();
 		const disconnectedFixedPeers = fixedPeers
-			.filter(peer => !this._peerMap.get(constructPeerIdFromPeerInfo(peer)))
-			.map(peer2Convert => peer2Convert);
+			.filter(peer => !this._peerMap.get(constructPeerIdFromPeerInfo(peer)));
 
 		// Trigger new connections only if the maximum of outbound connections has not been reached
 		// If the node is not yet connected to any of the fixed peers, enough slots should be saved for them
