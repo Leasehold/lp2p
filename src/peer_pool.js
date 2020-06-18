@@ -329,11 +329,7 @@ class PeerPool extends EventEmitter {
 		[...peersToConnect, ...disconnectedFixedPeers].forEach(
 			(peerInfo) => {
 				const peerId = constructPeerIdFromPeerInfo(peerInfo);
-				const existingPeer = this.getPeer(peerId);
-
-				return existingPeer
-					? existingPeer
-					: this.addOutboundPeer(peerId, peerInfo);
+				return this.addOutboundPeer(peerId, peerInfo);
 			},
 		);
 	}
