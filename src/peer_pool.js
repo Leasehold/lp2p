@@ -248,7 +248,9 @@ class PeerPool extends EventEmitter {
 		return this.requestFromPeer(packet, selectedPeerId);
 	}
 
-	send(message) {
+	send(message, options) {
+		options = options || {};
+		const peerLimit = options.peerLimit == null ? this._sendPeerLimit : options.peerLimit;
 		const listOfPeerInfo = [...this._peerMap.values()].map((peer) => ({
 			...(peer.peerInfo),
 			kind: peer.kind,
@@ -257,7 +259,7 @@ class PeerPool extends EventEmitter {
 		const selectedPeers = this._peerSelectForSend({
 			peers: listOfPeerInfo,
 			nodeInfo: this._nodeInfo,
-			peerLimit: this._sendPeerLimit,
+			peerLimit,
 			messagePacket: message,
 		});
 
