@@ -489,8 +489,8 @@ class P2P extends EventEmitter {
 		return response;
 	}
 
-	send(message, options) {
-		this._peerPool.send(message, options);
+	send(packet, peerLimit) {
+		this._peerPool.send(packet, peerLimit);
 	}
 
 	async requestFromPeer(packet, peerId) {
