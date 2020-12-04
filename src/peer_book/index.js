@@ -12,5 +12,5 @@
  * Removal or modification of this copyright notice is prohibited.
  */
 module.exports = {
-  ...require('./peer_book'),
+	...require('./peer_book'),
 };

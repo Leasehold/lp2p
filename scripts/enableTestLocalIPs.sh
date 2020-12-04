@@ -15,7 +15,7 @@
 #
 #
 
-for i in $( seq $1 $2 ); 
-do 
-   sudo route add -host "127.0.0.$i" dev lo
+for i in $( seq $1 $2 );
+do
+	sudo route add -host "127.0.0.$i" dev lo
 done

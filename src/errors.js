@@ -81,7 +81,7 @@ class RequestFailError extends Error {
 		this.message = peerId
 			? `${this.message}: Peer Id: ${this.peerId}: Peer Version: ${
 					this.peerVersion
-			  }`
+				}`
 			: message;
 	}
 }

@@ -24,7 +24,7 @@ process.env.NODE_ENV = 'test';
 [sinonChai, chaiAsPromised].forEach(plugin => chai.use(plugin));
 
 global.sandbox = sinon.createSandbox({
-  useFakeTimers: false,
+	useFakeTimers: false,
 });
 
 const { expect } = require('chai');
@@ -158,8 +158,8 @@ describe('Integration tests for P2P library', () => {
 
 				for (let p2p of p2pNodeList) {
 					const peerPorts = [...new Set(
-            p2p.getConnectedPeers().map(peerInfo => peerInfo.wsPort).sort()
-          )];
+						p2p.getConnectedPeers().map(peerInfo => peerInfo.wsPort).sort()
+					)];
 					const expectedPeerPorts = ALL_NODE_PORTS.filter(
 						peerPort => peerPort !== p2p.nodeInfo.wsPort,
 					);
@@ -395,7 +395,7 @@ describe('Integration tests for P2P library', () => {
 									ipAddress: '127.0.0.1',
 									wsPort: NETWORK_START_PORT + index - 1,
 								},
-						  ];
+							];
 
 				const nodePort = NETWORK_START_PORT + index;
 				return new P2P({
@@ -1004,7 +1004,7 @@ describe('Integration tests for P2P library', () => {
 									ipAddress: '127.0.0.1',
 									wsPort: NETWORK_START_PORT + index - 1,
 								},
-						  ];
+							];
 
 				const nodePort = NETWORK_START_PORT + index;
 				return new P2P({
@@ -1256,7 +1256,7 @@ describe('Integration tests for P2P library', () => {
 			return filteredPeers;
 		};
 		// Custom Peer selection for connection that returns all the peers
-		const peerSelectionForConnection = (input) => [...input.newPeers, ...input.triedPeers];
+		const peerSelectionForConnection = (input) => [...input.disconnectedNewPeers, ...input.disconnectedTriedPeers];
 
 		beforeEach(async () => {
 			p2pNodeList = [...new Array(NETWORK_PEER_COUNT).keys()].map(index => {
@@ -1270,7 +1270,7 @@ describe('Integration tests for P2P library', () => {
 									wsPort:
 										NETWORK_START_PORT + ((index + 1) % NETWORK_PEER_COUNT),
 								},
-						  ];
+							];
 
 				const nodePort = NETWORK_START_PORT + index;
 
@@ -1420,7 +1420,7 @@ describe('Integration tests for P2P library', () => {
 									ipAddress: '127.0.0.1',
 									wsPort: NETWORK_START_PORT + index - 1,
 								},
-						  ];
+							];
 
 				const nodePort = NETWORK_START_PORT + index;
 
@@ -2030,7 +2030,7 @@ describe('Integration tests for P2P library', () => {
 										ipAddress: '127.0.0.1',
 										wsPort: NETWORK_START_PORT + index - 1,
 									},
-							  ];
+								];
 
 					const nodePort = NETWORK_START_PORT + index;
 
@@ -2093,7 +2093,7 @@ describe('Integration tests for P2P library', () => {
 										ipAddress: '127.0.0.1',
 										wsPort: NETWORK_START_PORT + index - 1,
 									},
-							  ];
+								];
 
 					const nodePort = NETWORK_START_PORT + index;
 

@@ -313,22 +313,33 @@ class PeerPool extends EventEmitter {
 					.map(fixedPeer => fixedPeer.ipAddress)
 					.includes(triedPeer.ipAddress),
 		);
-		const { outboundCount } = this.getPeersCountPerKind();
+		const connectedNewPeers = newPeers.filter(
+			newPeer => this._peerMap.has(constructPeerIdFromPeerInfo(newPeer))
+		);
+		const connectedTriedPeers = triedPeers.filter(
+			triedPeer => this._peerMap.has(constructPeerIdFromPeerInfo(triedPeer))
+		);
+
+		const { outboundCount, inboundCount } = this.getPeersCountPerKind();
 		const disconnectedFixedPeers = fixedPeers
 			.filter(peer => !this._peerMap.get(constructPeerIdFromPeerInfo(peer)));
 
 		// Trigger new connections only if the maximum of outbound connections has not been reached
 		// If the node is not yet connected to any of the fixed peers, enough slots should be saved for them
-		const peerLimit =
-			this._maxOutboundConnections -
+		const peerLimit = this._maxOutboundConnections -
 			disconnectedFixedPeers.length -
 			outboundCount;
 
 		// This function can be customized so we should pass as much info as possible.
 		const peersToConnect = this._peerSelectForConnection({
-			newPeers: disconnectedNewPeers,
-			triedPeers: disconnectedTriedPeers,
-			peerLimit,
+			disconnectedNewPeers,
+			disconnectedTriedPeers,
+			connectedNewPeers,
+			connectedTriedPeers,
+			outboundPeerCount: outboundCount,
+			inboundPeerCount: inboundCount,
+			maxOutboundPeerCount: this._maxOutboundConnections,
+			maxInboundPeerCount: this._maxInboundConnections
 		});
 
 		[...peersToConnect, ...disconnectedFixedPeers].forEach(
@@ -498,7 +509,7 @@ class PeerPool extends EventEmitter {
 					category: PROTECTION_CATEGORY.NET_GROUP,
 					percentage: this._peerPoolConfig.netgroupProtectionRatio,
 					asc: true,
-			  })
+				})
 			: peers;
 		if (filteredPeersByNetgroup.length <= 1) {
 			return filteredPeersByNetgroup;
@@ -510,7 +521,7 @@ class PeerPool extends EventEmitter {
 					category: PROTECTION_CATEGORY.LATENCY,
 					percentage: this._peerPoolConfig.latencyProtectionRatio,
 					asc: true,
-			  })
+				})
 			: filteredPeersByNetgroup;
 		if (filteredPeersByLatency.length <= 1) {
 			return filteredPeersByLatency;
@@ -523,7 +534,7 @@ class PeerPool extends EventEmitter {
 					category: PROTECTION_CATEGORY.RESPONSE_RATE,
 					percentage: this._peerPoolConfig.productivityProtectionRatio,
 					asc: false,
-			  })
+				})
 			: filteredPeersByLatency;
 		if (filteredPeersByResponseRate.length <= 1) {
 			return filteredPeersByResponseRate;
@@ -536,7 +547,7 @@ class PeerPool extends EventEmitter {
 					category: PROTECTION_CATEGORY.CONNECT_TIME,
 					percentage: this._peerPoolConfig.longevityProtectionRatio,
 					asc: true,
-			  })
+				})
 			: filteredPeersByResponseRate;
 
 		return filteredPeersByConnectTime;

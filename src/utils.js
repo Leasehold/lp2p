@@ -168,10 +168,10 @@ const getBucketId = (options) => {
 						targetABytes,
 						targetBBytes,
 					]),
-			  ).readUInt32BE(0) % firstMod
+				).readUInt32BE(0) % firstMod
 			: hash(
 					Buffer.concat([secretBytes, networkBytes, addressBytes]),
-			  ).readUInt32BE(0) % firstMod;
+				).readUInt32BE(0) % firstMod;
 
 	kBytes.writeUInt32BE(k, 0);
 

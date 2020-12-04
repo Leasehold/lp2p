@@ -37,7 +37,7 @@ class PeerBook {
 						peerBucketCount: DEFAULT_NEW_BUCKET_COUNT,
 						peerBucketSize: DEFAULT_NEW_BUCKET_SIZE,
 						peerType: PEER_TYPE.NEW_PEER,
-				  },
+					},
 		);
 		this._triedPeers = new TriedList(
 			triedListConfig
@@ -47,7 +47,7 @@ class PeerBook {
 						peerBucketCount: DEFAULT_TRIED_BUCKET_COUNT,
 						peerBucketSize: DEFAULT_TRIED_BUCKET_SIZE,
 						peerType: PEER_TYPE.TRIED_PEER,
-				  },
+					},
 		);
 	}
 

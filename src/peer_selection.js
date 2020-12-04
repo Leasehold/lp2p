@@ -82,31 +82,32 @@ const selectPeersForSend = (input) => {
 };
 
 const selectPeersForConnection = (input) => {
-	if (input.peerLimit && input.peerLimit < 0) {
+	let peerLimit = input.maxOutboundPeerCount - input.outboundPeerCount;
+	if (peerLimit && peerLimit < 0) {
 		return [];
 	}
 
 	if (
-		input.peerLimit === undefined ||
-		input.peerLimit >= input.triedPeers.length + input.newPeers.length
+		peerLimit === undefined ||
+		peerLimit >= input.disconnectedTriedPeers.length + input.disconnectedNewPeers.length
 	) {
-		return [...input.newPeers, ...input.triedPeers];
+		return [...input.disconnectedNewPeers, ...input.disconnectedTriedPeers];
 	}
 
-	if (input.triedPeers.length === 0 && input.newPeers.length === 0) {
+	if (input.disconnectedTriedPeers.length === 0 && input.disconnectedNewPeers.length === 0) {
 		return [];
 	}
 
 	// LIP004 https://github.com/LiskHQ/lips/blob/master/proposals/lip-0004.md#peer-discovery-and-selection
 	const x =
-		input.triedPeers.length / (input.triedPeers.length + input.newPeers.length);
+		input.disconnectedTriedPeers.length / (input.disconnectedTriedPeers.length + input.disconnectedNewPeers.length);
 	const minimumProbability = 0.5;
 	const r = Math.max(x, minimumProbability);
 
-	const shuffledTriedPeers = shuffle(input.triedPeers);
-	const shuffledNewPeers = shuffle(input.newPeers);
+	const shuffledTriedPeers = shuffle(input.disconnectedTriedPeers);
+	const shuffledNewPeers = shuffle(input.disconnectedNewPeers);
 
-	return [...Array(input.peerLimit)].map(() => {
+	return [...Array(peerLimit)].map(() => {
 		if (shuffledTriedPeers.length !== 0) {
 			if (Math.random() < r) {
 				// With probability r
