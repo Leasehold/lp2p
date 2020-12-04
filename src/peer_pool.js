@@ -249,13 +249,15 @@ class PeerPool extends EventEmitter {
 	}
 
 	send(packet, peerLimit) {
-		if (peerLimit == null) {
-			peerLimit = this._sendPeerLimit;
-		}
 		const listOfPeerInfo = [...this._peerMap.values()].map((peer) => ({
 			...(peer.peerInfo),
 			kind: peer.kind,
 		}));
+		if (peerLimit == null) {
+			peerLimit = this._sendPeerLimit;
+		} else if (peerLimit === -1) {
+			peerLimit = listOfPeerInfo.length;
+		}
 		// This function can be customized so we should pass as much info as possible.
 		const selectedPeers = this._peerSelectForSend({
 			peers: listOfPeerInfo,
