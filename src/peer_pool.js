@@ -324,14 +324,9 @@ class PeerPool extends EventEmitter {
 		const disconnectedFixedPeers = fixedPeers
 			.filter(peer => !this._peerMap.get(constructPeerIdFromPeerInfo(peer)));
 
-		// Trigger new connections only if the maximum of outbound connections has not been reached
-		// If the node is not yet connected to any of the fixed peers, enough slots should be saved for them
-		const peerLimit = this._maxOutboundConnections -
-			disconnectedFixedPeers.length -
-			outboundCount;
-
 		// This function can be customized so we should pass as much info as possible.
 		const peersToConnect = this._peerSelectForConnection({
+			nodeInfo: this._nodeInfo,
 			disconnectedNewPeers,
 			disconnectedTriedPeers,
 			connectedNewPeers,
