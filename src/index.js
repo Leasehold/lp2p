@@ -14,7 +14,7 @@
  */
 
 module.exports = {
-	...require('./disconnect_status_codes'),
-	...require('./errors'),
-	...require('./p2p'),
+  ...require('./disconnect_status_codes'),
+  ...require('./errors'),
+  ...require('./p2p'),
 };

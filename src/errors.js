@@ -14,108 +14,108 @@
  */
 
 class PeerInboundHandshakeError extends Error {
-	constructor(
-		message,
-		statusCode,
-		remoteAddress,
-		handshakeURL,
-	) {
-		super(message);
-		this.name = 'PeerInboundHandshakeError';
-		this.statusCode = statusCode;
-		this.remoteAddress = remoteAddress;
-		this.handshakeURL = handshakeURL;
-	}
+  constructor(
+    message,
+    statusCode,
+    remoteAddress,
+    handshakeURL,
+  ) {
+    super(message);
+    this.name = 'PeerInboundHandshakeError';
+    this.statusCode = statusCode;
+    this.remoteAddress = remoteAddress;
+    this.handshakeURL = handshakeURL;
+  }
 }
 
 class PeerOutboundConnectionError extends Error {
-	constructor(message, statusCode) {
-		super(message);
-		this.name = 'PeerOutboundConnectError';
-		this.statusCode = statusCode;
-	}
+  constructor(message, statusCode) {
+    super(message);
+    this.name = 'PeerOutboundConnectError';
+    this.statusCode = statusCode;
+  }
 }
 
 class RPCResponseError extends Error {
-	constructor(message, peerId) {
-		super(message);
-		this.name = 'RPCResponseError';
-		this.peerId = peerId;
-	}
+  constructor(message, peerId) {
+    super(message);
+    this.name = 'RPCResponseError';
+    this.peerId = peerId;
+  }
 }
 
 class InvalidRPCResponseError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'InvalidRPCResponseError';
-	}
+  constructor(message) {
+    super(message);
+    this.name = 'InvalidRPCResponseError';
+  }
 }
 
 class RPCResponseAlreadySentError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'ResponseAlreadySentError';
-	}
+  constructor(message) {
+    super(message);
+    this.name = 'ResponseAlreadySentError';
+  }
 }
 
 class InvalidPeerError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'InvalidPeerError';
-	}
+  constructor(message) {
+    super(message);
+    this.name = 'InvalidPeerError';
+  }
 }
 
 class RequestFailError extends Error {
-	constructor(
-		message,
-		response,
-		peerId,
-		peerVersion,
-	) {
-		super(message);
-		this.name = 'RequestFailError';
-		// The request was made and the peer responded with error
-		this.response = response || new Error(message);
-		this.peerId = peerId || '';
-		this.peerVersion = peerVersion || '';
-		this.message = peerId
-			? `${this.message}: Peer Id: ${this.peerId}: Peer Version: ${
-					this.peerVersion
-				}`
-			: message;
-	}
+  constructor(
+    message,
+    response,
+    peerId,
+    peerVersion,
+  ) {
+    super(message);
+    this.name = 'RequestFailError';
+    // The request was made and the peer responded with error
+    this.response = response || new Error(message);
+    this.peerId = peerId || '';
+    this.peerVersion = peerVersion || '';
+    this.message = peerId
+      ? `${this.message}: Peer Id: ${this.peerId}: Peer Version: ${
+          this.peerVersion
+        }`
+      : message;
+  }
 }
 
 class SendFailError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'SendFailError';
-	}
+  constructor(message) {
+    super(message);
+    this.name = 'SendFailError';
+  }
 }
 
 class InvalidRPCRequestError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'InvalidRPCRequestError';
-	}
+  constructor(message) {
+    super(message);
+    this.name = 'InvalidRPCRequestError';
+  }
 }
 
 class InvalidProtocolMessageError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'InvalidProtocolMessageError';
-	}
+  constructor(message) {
+    super(message);
+    this.name = 'InvalidProtocolMessageError';
+  }
 }
 
 module.exports = {
-	PeerInboundHandshakeError,
-	PeerOutboundConnectionError,
-	RPCResponseError,
-	InvalidRPCResponseError,
-	RPCResponseAlreadySentError,
-	InvalidPeerError,
-	RequestFailError,
-	SendFailError,
-	InvalidRPCRequestError,
-	InvalidProtocolMessageError,
+  PeerInboundHandshakeError,
+  PeerOutboundConnectionError,
+  RPCResponseError,
+  InvalidRPCResponseError,
+  RPCResponseAlreadySentError,
+  InvalidPeerError,
+  RequestFailError,
+  SendFailError,
+  InvalidRPCRequestError,
+  InvalidProtocolMessageError,
 };

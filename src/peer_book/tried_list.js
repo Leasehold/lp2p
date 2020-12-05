@@ -18,89 +18,89 @@ const { constructPeerIdFromPeerInfo } = require('../utils');
 const { CustomPeerInfo, PeerList, PeerListConfig } = require('./peer_list');
 
 class TriedList extends PeerList {
-	constructor({
-		peerBucketCount,
-		maxReconnectTries,
-		secret,
-		peerBucketSize,
-		peerType,
-	}) {
-		super({
-			secret,
-			peerBucketCount,
-			peerBucketSize,
-			peerType,
-		});
+  constructor({
+    peerBucketCount,
+    maxReconnectTries,
+    secret,
+    peerBucketSize,
+    peerType,
+  }) {
+    super({
+      secret,
+      peerBucketCount,
+      peerBucketSize,
+      peerType,
+    });
 
-		this._maxReconnectTries = maxReconnectTries
-			? maxReconnectTries
-			: DEFAULT_MAX_RECONNECT_TRIES;
+    this._maxReconnectTries = maxReconnectTries
+      ? maxReconnectTries
+      : DEFAULT_MAX_RECONNECT_TRIES;
 
-		this.initializePeerList(this.peerMap);
-	}
+    this.initializePeerList(this.peerMap);
+  }
 
-	initializePeerList(peerMap) {
-		// Initialize the Map with all the buckets
-		for (const bucketId of [
-			...new Array(this.peerListConfig.peerBucketCount).keys(),
-		]) {
-			peerMap.set(bucketId, new Map());
-		}
-	}
+  initializePeerList(peerMap) {
+    // Initialize the Map with all the buckets
+    for (const bucketId of [
+      ...new Array(this.peerListConfig.peerBucketCount).keys(),
+    ]) {
+      peerMap.set(bucketId, new Map());
+    }
+  }
 
-	get triedPeerConfig() {
-		return {
-			...this.peerListConfig,
-			maxReconnectTries: this._maxReconnectTries,
-		};
-	}
+  get triedPeerConfig() {
+    return {
+      ...this.peerListConfig,
+      maxReconnectTries: this._maxReconnectTries,
+    };
+  }
 
-	// Extend to add custom TriedPeerInfo
-	initPeerInfo(peerInfo) {
-		return {
-			peerInfo,
-			numOfConnectionFailures: 0,
-			dateAdded: new Date(),
-		};
-	}
+  // Extend to add custom TriedPeerInfo
+  initPeerInfo(peerInfo) {
+    return {
+      peerInfo,
+      numOfConnectionFailures: 0,
+      dateAdded: new Date(),
+    };
+  }
 
-	// Should return true if the peer is evicted due to failed connection
-	failedConnectionAction(incomingPeerInfo) {
-		const bucketId = this.selectBucketId(incomingPeerInfo.ipAddress);
-		const bucket = this.peerMap.get(bucketId);
-		const incomingPeerId = constructPeerIdFromPeerInfo(incomingPeerInfo);
+  // Should return true if the peer is evicted due to failed connection
+  failedConnectionAction(incomingPeerInfo) {
+    const bucketId = this.selectBucketId(incomingPeerInfo.ipAddress);
+    const bucket = this.peerMap.get(bucketId);
+    const incomingPeerId = constructPeerIdFromPeerInfo(incomingPeerInfo);
 
-		if (!bucket) {
-			return false;
-		}
-		const foundPeer = bucket.get(incomingPeerId);
+    if (!bucket) {
+      return false;
+    }
+    const foundPeer = bucket.get(incomingPeerId);
 
-		if (!foundPeer) {
-			return false;
-		}
-		const {
-			peerInfo,
-			numOfConnectionFailures,
-			dateAdded,
-		} = foundPeer;
+    if (!foundPeer) {
+      return false;
+    }
+    const {
+      peerInfo,
+      numOfConnectionFailures,
+      dateAdded,
+    } = foundPeer;
 
-		if (numOfConnectionFailures + 1 >= this._maxReconnectTries) {
-			bucket.delete(incomingPeerId);
+    if (numOfConnectionFailures + 1 >= this._maxReconnectTries) {
+      bucket.delete(incomingPeerId);
 
-			return true;
-		}
-		const updatedTriedPeerInfo = {
-			peerInfo,
-			numOfConnectionFailures: numOfConnectionFailures + 1,
-			dateAdded,
-		};
+      return true;
+    }
+    const updatedTriedPeerInfo = {
+      peerInfo,
+      numOfConnectionFailures: numOfConnectionFailures + 1,
+      dateAdded,
+    };
 
-		bucket.set(incomingPeerId, updatedTriedPeerInfo);
+    bucket.set(incomingPeerId, updatedTriedPeerInfo);
 
-		return false;
-	}
+    return false;
+  }
 }
 
 module.exports = {
-	TriedList
+  TriedList
 };

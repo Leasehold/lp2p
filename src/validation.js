@@ -15,15 +15,15 @@
 const { gte: isVersionGTE, valid: isValidVersion } = require('semver');
 const { isIP, isNumeric, isPort } = require('validator');
 const {
-	InvalidPeerError,
-	InvalidProtocolMessageError,
-	InvalidRPCRequestError,
-	InvalidRPCResponseError,
+  InvalidPeerError,
+  InvalidProtocolMessageError,
+  InvalidRPCRequestError,
+  InvalidRPCResponseError,
 } = require('./errors');
 
 const {
-	INCOMPATIBLE_NETWORK_REASON,
-	INCOMPATIBLE_PROTOCOL_VERSION_REASON,
+  INCOMPATIBLE_NETWORK_REASON,
+  INCOMPATIBLE_PROTOCOL_VERSION_REASON,
 } = require('./disconnect_status_codes');
 const { constructPeerIdFromPeerInfo } = require('./utils');
 
@@ -31,290 +31,290 @@ const IPV4_NUMBER = 4;
 const IPV6_NUMBER = 6;
 
 const getByteSize = (object) =>
-	Buffer.byteLength(JSON.stringify(object));
+  Buffer.byteLength(JSON.stringify(object));
 
 const validatePeerAddress = (ip, wsPort) => {
-	if (
-		(!isIP(ip, IPV4_NUMBER) && !isIP(ip, IPV6_NUMBER)) ||
-		!isPort(wsPort.toString())
-	) {
-		return false;
-	}
+  if (
+    (!isIP(ip, IPV4_NUMBER) && !isIP(ip, IPV6_NUMBER)) ||
+    !isPort(wsPort.toString())
+  ) {
+    return false;
+  }
 
-	return true;
+  return true;
 };
 
 const incomingPeerInfoSanitization = (peerInfo) => {
-	const { ip, ...restOfPeerInfo } = peerInfo;
+  const { ip, ...restOfPeerInfo } = peerInfo;
 
-	return {
-		ipAddress: ip,
-		...restOfPeerInfo,
-	};
+  return {
+    ipAddress: ip,
+    ...restOfPeerInfo,
+  };
 };
 
 const outgoingPeerInfoSanitization = (peerInfo) => {
-	const { ipAddress, ...restOfPeerInfo } = peerInfo;
+  const { ipAddress, ...restOfPeerInfo } = peerInfo;
 
-	return {
-		ip: ipAddress,
-		...restOfPeerInfo,
-	};
+  return {
+    ip: ipAddress,
+    ...restOfPeerInfo,
+  };
 };
 
 const validatePeerInfoSchema = (rawPeerInfo) => {
-	if (!rawPeerInfo) {
-		throw new InvalidPeerError(`Invalid peer object`);
-	}
+  if (!rawPeerInfo) {
+    throw new InvalidPeerError(`Invalid peer object`);
+  }
 
-	const protocolPeer = rawPeerInfo;
-	if (
-		!protocolPeer.ip ||
-		!protocolPeer.wsPort ||
-		!validatePeerAddress(protocolPeer.ip, protocolPeer.wsPort)
-	) {
-		throw new InvalidPeerError(
-			`Invalid peer ip or port for peer with ip: ${
-				protocolPeer.ip
-			} and wsPort ${protocolPeer.wsPort}`,
-		);
-	}
+  const protocolPeer = rawPeerInfo;
+  if (
+    !protocolPeer.ip ||
+    !protocolPeer.wsPort ||
+    !validatePeerAddress(protocolPeer.ip, protocolPeer.wsPort)
+  ) {
+    throw new InvalidPeerError(
+      `Invalid peer ip or port for peer with ip: ${
+        protocolPeer.ip
+      } and wsPort ${protocolPeer.wsPort}`,
+    );
+  }
 
-	if (!protocolPeer.version || !isValidVersion(protocolPeer.version)) {
-		throw new InvalidPeerError(
-			`Invalid peer version for peer with ip: ${protocolPeer.ip}, wsPort ${
-				protocolPeer.wsPort
-			} and version ${protocolPeer.version}`,
-		);
-	}
+  if (!protocolPeer.version || !isValidVersion(protocolPeer.version)) {
+    throw new InvalidPeerError(
+      `Invalid peer version for peer with ip: ${protocolPeer.ip}, wsPort ${
+        protocolPeer.wsPort
+      } and version ${protocolPeer.version}`,
+    );
+  }
 
-	const version = protocolPeer.version;
-	const protocolVersion = protocolPeer.protocolVersion;
-	const wsPort = +protocolPeer.wsPort;
-	const os = protocolPeer.os ? protocolPeer.os : '';
-	const height =
-		protocolPeer.height && isNumeric(protocolPeer.height.toString())
-			? +protocolPeer.height
-			: 0;
-	const { options, ...protocolPeerWithoutOptions } = protocolPeer;
-	const peerInfo = {
-		...protocolPeerWithoutOptions,
-		ipAddress: protocolPeerWithoutOptions.ip,
-		wsPort,
-		height,
-		os,
-		version,
-		protocolVersion,
-	};
+  const version = protocolPeer.version;
+  const protocolVersion = protocolPeer.protocolVersion;
+  const wsPort = +protocolPeer.wsPort;
+  const os = protocolPeer.os ? protocolPeer.os : '';
+  const height =
+    protocolPeer.height && isNumeric(protocolPeer.height.toString())
+      ? +protocolPeer.height
+      : 0;
+  const { options, ...protocolPeerWithoutOptions } = protocolPeer;
+  const peerInfo = {
+    ...protocolPeerWithoutOptions,
+    ipAddress: protocolPeerWithoutOptions.ip,
+    wsPort,
+    height,
+    os,
+    version,
+    protocolVersion,
+  };
 
-	const { ip, ...peerInfoUpdated } = peerInfo;
+  const { ip, ...peerInfoUpdated } = peerInfo;
 
-	return peerInfoUpdated;
+  return peerInfoUpdated;
 };
 
 const validatePeerInfo = (rawPeerInfo, maxByteSize) => {
-	const byteSize = getByteSize(rawPeerInfo);
-	if (byteSize > maxByteSize) {
-		throw new InvalidRPCResponseError(
-			`PeerInfo was larger than the maximum allowed ${maxByteSize} bytes`,
-		);
-	}
+  const byteSize = getByteSize(rawPeerInfo);
+  if (byteSize > maxByteSize) {
+    throw new InvalidRPCResponseError(
+      `PeerInfo was larger than the maximum allowed ${maxByteSize} bytes`,
+    );
+  }
 
-	return validatePeerInfoSchema(rawPeerInfo);
+  return validatePeerInfoSchema(rawPeerInfo);
 };
 
 const validatePeersInfoList = (rawBasicPeerInfoList, maxPeerInfoListLength, maxPeerInfoByteSize) => {
-	if (!rawBasicPeerInfoList) {
-		throw new InvalidRPCResponseError('Invalid response type');
-	}
-	const { peers } = rawBasicPeerInfoList;
+  if (!rawBasicPeerInfoList) {
+    throw new InvalidRPCResponseError('Invalid response type');
+  }
+  const { peers } = rawBasicPeerInfoList;
 
-	if (Array.isArray(peers)) {
-		if (peers.length > maxPeerInfoListLength) {
-			throw new InvalidRPCResponseError('PeerInfo list was too long');
-		}
-		const cleanPeerList = peers.filter(
-			peerInfo => getByteSize(peerInfo) < maxPeerInfoByteSize,
-		);
-		const sanitizedPeerList = cleanPeerList.map(
-			validatePeerInfoSchema,
-		);
+  if (Array.isArray(peers)) {
+    if (peers.length > maxPeerInfoListLength) {
+      throw new InvalidRPCResponseError('PeerInfo list was too long');
+    }
+    const cleanPeerList = peers.filter(
+      peerInfo => getByteSize(peerInfo) < maxPeerInfoByteSize,
+    );
+    const sanitizedPeerList = cleanPeerList.map(
+      validatePeerInfoSchema,
+    );
 
-		return sanitizedPeerList;
-	} else {
-		throw new InvalidRPCResponseError('Invalid response type');
-	}
+    return sanitizedPeerList;
+  } else {
+    throw new InvalidRPCResponseError('Invalid response type');
+  }
 };
 
 const validateRPCRequest = (request) => {
-	if (!request) {
-		throw new InvalidRPCRequestError('Invalid request');
-	}
+  if (!request) {
+    throw new InvalidRPCRequestError('Invalid request');
+  }
 
-	const rpcRequest = request;
-	if (typeof rpcRequest.procedure !== 'string') {
-		throw new InvalidRPCRequestError('Request procedure name is not a string');
-	}
+  const rpcRequest = request;
+  if (typeof rpcRequest.procedure !== 'string') {
+    throw new InvalidRPCRequestError('Request procedure name is not a string');
+  }
 
-	return rpcRequest;
+  return rpcRequest;
 };
 
 const validateProtocolMessage = (message) => {
-	if (!message) {
-		throw new InvalidProtocolMessageError('Invalid message');
-	}
+  if (!message) {
+    throw new InvalidProtocolMessageError('Invalid message');
+  }
 
-	const protocolMessage = message;
-	if (typeof protocolMessage.event !== 'string') {
-		throw new InvalidProtocolMessageError('Protocol message is not a string');
-	}
+  const protocolMessage = message;
+  if (typeof protocolMessage.event !== 'string') {
+    throw new InvalidProtocolMessageError('Protocol message is not a string');
+  }
 
-	return protocolMessage;
+  return protocolMessage;
 };
 
 const checkNetworkCompatibility = (peerInfo, nodeInfo) => {
-	if (!peerInfo.nethash) {
-		return false;
-	}
+  if (!peerInfo.nethash) {
+    return false;
+  }
 
-	return peerInfo.nethash === nodeInfo.nethash;
+  return peerInfo.nethash === nodeInfo.nethash;
 };
 
 const checkProtocolVersionCompatibility = (peerInfo, nodeInfo) => {
-	// Backwards compatibility for older peers which do not have a protocolVersion field.
-	if (!peerInfo.protocolVersion) {
-		try {
-			return isVersionGTE(peerInfo.version, nodeInfo.minVersion);
-		} catch (error) {
-			return false;
-		}
-	}
-	if (typeof peerInfo.protocolVersion !== 'string') {
-		return false;
-	}
+  // Backwards compatibility for older peers which do not have a protocolVersion field.
+  if (!peerInfo.protocolVersion) {
+    try {
+      return isVersionGTE(peerInfo.version, nodeInfo.minVersion);
+    } catch (error) {
+      return false;
+    }
+  }
+  if (typeof peerInfo.protocolVersion !== 'string') {
+    return false;
+  }
 
-	const peerHardForks = parseInt(peerInfo.protocolVersion.split('.')[0], 10);
-	const systemHardForks = parseInt(nodeInfo.protocolVersion.split('.')[0], 10);
+  const peerHardForks = parseInt(peerInfo.protocolVersion.split('.')[0], 10);
+  const systemHardForks = parseInt(nodeInfo.protocolVersion.split('.')[0], 10);
 
-	return systemHardForks === peerHardForks && peerHardForks >= 1;
+  return systemHardForks === peerHardForks && peerHardForks >= 1;
 };
 
 const checkPeerCompatibility = (peerInfo, nodeInfo) => {
-	if (!checkNetworkCompatibility(peerInfo, nodeInfo)) {
-		return {
-			success: false,
-			errors: [INCOMPATIBLE_NETWORK_REASON],
-		};
-	}
+  if (!checkNetworkCompatibility(peerInfo, nodeInfo)) {
+    return {
+      success: false,
+      errors: [INCOMPATIBLE_NETWORK_REASON],
+    };
+  }
 
-	if (!checkProtocolVersionCompatibility(peerInfo, nodeInfo)) {
-		return {
-			success: false,
-			errors: [INCOMPATIBLE_PROTOCOL_VERSION_REASON],
-		};
-	}
+  if (!checkProtocolVersionCompatibility(peerInfo, nodeInfo)) {
+    return {
+      success: false,
+      errors: [INCOMPATIBLE_PROTOCOL_VERSION_REASON],
+    };
+  }
 
-	return {
-		success: true,
-	};
+  return {
+    success: true,
+  };
 };
 
 const sanitizePeerLists = (lists, nodeInfo) => {
-	const blacklistedPeers = lists.blacklistedPeers.filter(peerInfo => {
-		if (peerInfo.ipAddress === nodeInfo.ipAddress) {
-			return false;
-		}
+  const blacklistedPeers = lists.blacklistedPeers.filter(peerInfo => {
+    if (peerInfo.ipAddress === nodeInfo.ipAddress) {
+      return false;
+    }
 
-		return true;
-	});
+    return true;
+  });
 
-	const blacklistedIPs = blacklistedPeers.map(peerInfo => peerInfo.ipAddress);
+  const blacklistedIPs = blacklistedPeers.map(peerInfo => peerInfo.ipAddress);
 
-	const seedPeers = lists.seedPeers.filter(peerInfo => {
-		if (peerInfo.ipAddress === nodeInfo.ipAddress) {
-			return false;
-		}
+  const seedPeers = lists.seedPeers.filter(peerInfo => {
+    if (peerInfo.ipAddress === nodeInfo.ipAddress) {
+      return false;
+    }
 
-		if (blacklistedIPs.includes(peerInfo.ipAddress)) {
-			return false;
-		}
+    if (blacklistedIPs.includes(peerInfo.ipAddress)) {
+      return false;
+    }
 
-		return true;
-	});
+    return true;
+  });
 
-	const fixedPeers = lists.fixedPeers.filter(peerInfo => {
-		if (peerInfo.ipAddress === nodeInfo.ipAddress) {
-			return false;
-		}
+  const fixedPeers = lists.fixedPeers.filter(peerInfo => {
+    if (peerInfo.ipAddress === nodeInfo.ipAddress) {
+      return false;
+    }
 
-		if (blacklistedIPs.includes(peerInfo.ipAddress)) {
-			return false;
-		}
+    if (blacklistedIPs.includes(peerInfo.ipAddress)) {
+      return false;
+    }
 
-		return true;
-	});
+    return true;
+  });
 
-	const whitelisted = lists.whitelisted.filter(peerInfo => {
-		if (peerInfo.ipAddress === nodeInfo.ipAddress) {
-			return false;
-		}
+  const whitelisted = lists.whitelisted.filter(peerInfo => {
+    if (peerInfo.ipAddress === nodeInfo.ipAddress) {
+      return false;
+    }
 
-		if (blacklistedIPs.includes(peerInfo.ipAddress)) {
-			return false;
-		}
+    if (blacklistedIPs.includes(peerInfo.ipAddress)) {
+      return false;
+    }
 
-		if (
-			fixedPeers
-				.map(constructPeerIdFromPeerInfo)
-				.includes(constructPeerIdFromPeerInfo(peerInfo))
-		) {
-			return false;
-		}
+    if (
+      fixedPeers
+        .map(constructPeerIdFromPeerInfo)
+        .includes(constructPeerIdFromPeerInfo(peerInfo))
+    ) {
+      return false;
+    }
 
-		if (
-			seedPeers
-				.map(constructPeerIdFromPeerInfo)
-				.includes(constructPeerIdFromPeerInfo(peerInfo))
-		) {
-			return false;
-		}
+    if (
+      seedPeers
+        .map(constructPeerIdFromPeerInfo)
+        .includes(constructPeerIdFromPeerInfo(peerInfo))
+    ) {
+      return false;
+    }
 
-		return true;
-	});
+    return true;
+  });
 
-	const previousPeers = lists.previousPeers.filter(peerInfo => {
-		if (peerInfo.ipAddress === nodeInfo.ipAddress) {
-			return false;
-		}
+  const previousPeers = lists.previousPeers.filter(peerInfo => {
+    if (peerInfo.ipAddress === nodeInfo.ipAddress) {
+      return false;
+    }
 
-		if (blacklistedIPs.includes(peerInfo.ipAddress)) {
-			return false;
-		}
+    if (blacklistedIPs.includes(peerInfo.ipAddress)) {
+      return false;
+    }
 
-		return true;
-	});
+    return true;
+  });
 
-	return {
-		blacklistedPeers,
-		seedPeers,
-		fixedPeers,
-		whitelisted,
-		previousPeers,
-	};
+  return {
+    blacklistedPeers,
+    seedPeers,
+    fixedPeers,
+    whitelisted,
+    previousPeers,
+  };
 };
 
 module.exports = {
-	getByteSize,
-	validatePeerAddress,
-	incomingPeerInfoSanitization,
-	outgoingPeerInfoSanitization,
-	validatePeerInfoSchema,
-	validatePeerInfo,
-	validatePeersInfoList,
-	validateRPCRequest,
-	validateProtocolMessage,
-	checkNetworkCompatibility,
-	checkProtocolVersionCompatibility,
-	checkPeerCompatibility,
-	sanitizePeerLists,
+  getByteSize,
+  validatePeerAddress,
+  incomingPeerInfoSanitization,
+  outgoingPeerInfoSanitization,
+  validatePeerInfoSchema,
+  validatePeerInfo,
+  validatePeersInfoList,
+  validateRPCRequest,
+  validateProtocolMessage,
+  checkNetworkCompatibility,
+  checkProtocolVersionCompatibility,
+  checkPeerCompatibility,
+  sanitizePeerLists,
 };

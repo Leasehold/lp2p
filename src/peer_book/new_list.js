@@ -18,73 +18,73 @@ const DEFAULT_EVICTION_THRESHOLD_TIME = 86400000; // Milliseconds in a day
 const { CustomPeerInfo, PeerList, PeerListConfig } = require('./peer_list');
 
 class NewList extends PeerList {
-	constructor({
-		evictionThresholdTime,
-		peerBucketCount,
-		peerBucketSize,
-		secret,
-		peerType,
-	}) {
-		super({
-			secret,
-			peerBucketCount,
-			peerBucketSize,
-			peerType,
-		});
+  constructor({
+    evictionThresholdTime,
+    peerBucketCount,
+    peerBucketSize,
+    secret,
+    peerType,
+  }) {
+    super({
+      secret,
+      peerBucketCount,
+      peerBucketSize,
+      peerType,
+    });
 
-		this._evictionThresholdTime = evictionThresholdTime
-			? evictionThresholdTime
-			: DEFAULT_EVICTION_THRESHOLD_TIME;
-	}
+    this._evictionThresholdTime = evictionThresholdTime
+      ? evictionThresholdTime
+      : DEFAULT_EVICTION_THRESHOLD_TIME;
+  }
 
-	get newPeerConfig() {
-		return {
-			...this.peerListConfig,
-			evictionThresholdTime: this._evictionThresholdTime,
-		};
-	}
+  get newPeerConfig() {
+    return {
+      ...this.peerListConfig,
+      evictionThresholdTime: this._evictionThresholdTime,
+    };
+  }
 
-	// Extend eviction of NewPeers
-	evictPeerFromBucket(bucketId) {
-		const bucket = this.peerMap.get(bucketId);
-		if (!bucket) {
-			return undefined;
-		}
+  // Extend eviction of NewPeers
+  evictPeerFromBucket(bucketId) {
+    const bucket = this.peerMap.get(bucketId);
+    if (!bucket) {
+      return undefined;
+    }
 
-		// First eviction strategy
-		const evictedPeerBasedOnTime = this._evictPeerBasedOnTimeInBucket(bucketId);
+    // First eviction strategy
+    const evictedPeerBasedOnTime = this._evictPeerBasedOnTimeInBucket(bucketId);
 
-		if (evictedPeerBasedOnTime) {
-			return evictedPeerBasedOnTime;
-		}
+    if (evictedPeerBasedOnTime) {
+      return evictedPeerBasedOnTime;
+    }
 
-		// Second eviction strategy: Default eviction based on base class
-		return this.evictRandomlyFromBucket(bucketId);
-	}
+    // Second eviction strategy: Default eviction based on base class
+    return this.evictRandomlyFromBucket(bucketId);
+  }
 
-	// Evict a peer when a bucket is full based on the time of residence in a bucket
-	_evictPeerBasedOnTimeInBucket(bucketId) {
-		const bucket = this.peerMap.get(bucketId);
-		if (!bucket) {
-			return undefined;
-		}
+  // Evict a peer when a bucket is full based on the time of residence in a bucket
+  _evictPeerBasedOnTimeInBucket(bucketId) {
+    const bucket = this.peerMap.get(bucketId);
+    if (!bucket) {
+      return undefined;
+    }
 
-		for (const [peerId, peer] of bucket) {
-			const timeDifference = Math.round(
-				Math.abs(peer.dateAdded.getTime() - new Date().getTime()),
-			);
+    for (const [peerId, peer] of bucket) {
+      const timeDifference = Math.round(
+        Math.abs(peer.dateAdded.getTime() - new Date().getTime()),
+      );
 
-			if (timeDifference >= this._evictionThresholdTime) {
-				bucket.delete(peerId);
+      if (timeDifference >= this._evictionThresholdTime) {
+        bucket.delete(peerId);
 
-				return peer;
-			}
-		}
+        return peer;
+      }
+    }
 
-		return undefined;
-	}
+    return undefined;
+  }
 }
 
 module.exports = {
-	NewList
+  NewList
 };
