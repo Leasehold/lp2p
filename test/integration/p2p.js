@@ -45,7 +45,7 @@ describe('Integration tests for P2P library', () => {
 	const NETWORK_START_PORT = 5000;
 	const NETWORK_PEER_COUNT = 10;
 	const POPULATOR_INTERVAL = 50;
-	const DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE = 20;
+	const DEFAULT_MAX_OUTBOUND_CONNECTIONS = 20;
 	const DEFAULT_MAX_INBOUND_CONNECTIONS = 100;
 	const ALL_NODE_PORTS = [
 		...new Array(NETWORK_PEER_COUNT).keys(),
@@ -70,7 +70,7 @@ describe('Integration tests for P2P library', () => {
 					connectTimeout: 200,
 					wsEngine: 'ws',
 					populatorInterval: POPULATOR_INTERVAL,
-					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE,
+					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 					maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 					nodeInfo: {
 						wsPort: nodePort,
@@ -130,7 +130,7 @@ describe('Integration tests for P2P library', () => {
 					ackTimeout: 1000,
 					peerBanTime: 100,
 					populatorInterval: 500,
-					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE,
+					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 					maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 					nodeInfo: {
 						wsPort: nodePort,
@@ -405,7 +405,7 @@ describe('Integration tests for P2P library', () => {
 					seedPeers,
 					wsEngine: 'ws',
 					populatorInterval: POPULATOR_INTERVAL,
-					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE,
+					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 					maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 					nodeInfo: {
 						wsPort: nodePort,
@@ -1013,7 +1013,7 @@ describe('Integration tests for P2P library', () => {
 					seedPeers,
 					wsEngine: 'ws',
 					populatorInterval: POPULATOR_INTERVAL,
-					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE,
+					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 					maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 					rateCalculationInterval: 100,
 					// For the third node, make the message rate limit higher.
@@ -1283,7 +1283,7 @@ describe('Integration tests for P2P library', () => {
 					seedPeers,
 					wsEngine: 'ws',
 					populatorInterval: POPULATOR_INTERVAL,
-					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE,
+					maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 					maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 					nodeInfo: {
 						wsPort: nodePort,
@@ -2040,7 +2040,7 @@ describe('Integration tests for P2P library', () => {
 						seedPeers,
 						wsEngine: 'ws',
 						populatorInterval: 10000,
-						maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE,
+						maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 						maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 						minimumPeerDiscoveryThreshold: MINIMUM_PEER_DISCOVERY_THRESHOLD,
 						nodeInfo: {
@@ -2103,7 +2103,7 @@ describe('Integration tests for P2P library', () => {
 						seedPeers,
 						wsEngine: 'ws',
 						populatorInterval: 10000,
-						maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS_PER_MODULE,
+						maxOutboundConnections: DEFAULT_MAX_OUTBOUND_CONNECTIONS,
 						maxInboundConnections: DEFAULT_MAX_INBOUND_CONNECTIONS,
 						maxPeerDiscoveryResponseLength: MAX_PEER_DISCOVERY_RESPONSE_LENGTH,
 						nodeInfo: {

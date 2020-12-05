@@ -313,12 +313,21 @@ class PeerPool extends EventEmitter {
 					.map(fixedPeer => fixedPeer.ipAddress)
 					.includes(triedPeer.ipAddress),
 		);
-		const connectedNewPeers = newPeers.filter(
-			newPeer => this._peerMap.has(constructPeerIdFromPeerInfo(newPeer))
-		);
-		const connectedTriedPeers = triedPeers.filter(
-			triedPeer => this._peerMap.has(constructPeerIdFromPeerInfo(triedPeer))
-		);
+
+		const mapToConnectedPeerInfo = (peerInfo) => {
+			return {
+				kind: this._peerMap.get(constructPeerIdFromPeerInfo(peerInfo)).kind,
+				...peerInfo
+			};
+		};
+
+		const connectedNewPeers = newPeers
+			.filter(newPeer => this._peerMap.has(constructPeerIdFromPeerInfo(newPeer)))
+			.map(mapToConnectedPeerInfo);
+
+		const connectedTriedPeers = triedPeers
+			.filter(triedPeer => this._peerMap.has(constructPeerIdFromPeerInfo(triedPeer)))
+			.map(mapToConnectedPeerInfo);
 
 		const { outboundCount, inboundCount } = this.getPeersCountPerKind();
 		const disconnectedFixedPeers = fixedPeers
@@ -346,8 +355,14 @@ class PeerPool extends EventEmitter {
 	}
 
 	addInboundPeer(peerInfo, socket) {
+		let moduleCount;
+		if (this._nodeInfo && this._nodeInfo.modules) {
+			moduleCount = Object.keys(this._nodeInfo.modules).length + 1;
+		} else {
+			moduleCount = 1;
+		}
 		const inboundPeers = this.getPeers(PEER_KIND_INBOUND);
-		if (inboundPeers.length >= this._maxInboundConnections) {
+		if (inboundPeers.length >= this._maxInboundConnections * moduleCount) {
 			this._evictPeer(PEER_KIND_INBOUND);
 		}
 
