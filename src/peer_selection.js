@@ -82,7 +82,13 @@ const selectPeersForSend = (input) => {
 };
 
 const selectPeersForConnection = (input) => {
-	let peerLimit = input.maxOutboundPeerCount - input.outboundPeerCount;
+	let moduleCount;
+	if (input.nodeInfo && input.nodeInfo.modules) {
+		moduleCount = Object.keys(input.nodeInfo.modules).length + 1;
+	} else {
+		moduleCount = 1;
+	}
+	let peerLimit = (input.maxOutboundPeerCount * moduleCount) - input.outboundPeerCount;
 	if (peerLimit && peerLimit < 0) {
 		return [];
 	}

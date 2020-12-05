@@ -1706,7 +1706,7 @@ describe('Integration tests for P2P library', () => {
 				const firstP2PNode = p2pNodeList[0];
 				firstP2PNode.send({ event: 'propagate', data: 0 });
 
-				await wait(50);
+				await wait(100);
 
 				expect(propagatedMessages.size).to.be.eql(30);
 				for (let value of propagatedMessages.values()) {
