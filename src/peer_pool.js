@@ -223,15 +223,14 @@ class PeerPool extends EventEmitter {
   }
 
   async request(packet) {
-    const outboundPeerInfos = this.getUniqueOutboundConnectedPeers().map(
-      (peerInfo) => ({
-        ...peerInfo,
-        kind: PEER_KIND_OUTBOUND
-      }),
-    );
+    const listOfPeerInfo = [...this._peerMap.values()].map((peer) => ({
+      ...(peer.peerInfo),
+      kind: peer.kind,
+    }));
+
     // This function can be customized so we should pass as much info as possible.
     const selectedPeers = this._peerSelectForRequest({
-      peers: outboundPeerInfos,
+      peers: listOfPeerInfo,
       nodeInfo: this._nodeInfo,
       peerLimit: 1,
       requestPacket: packet,
