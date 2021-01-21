@@ -41,6 +41,9 @@ const FORBIDDEN_CONNECTION_REASON = 'Peer is not allowed to connect';
 const DUPLICATE_CONNECTION = 4404;
 const DUPLICATE_CONNECTION_REASON = 'Peer has a duplicate connection';
 
+const FAILED_TO_RESPOND = 1000;
+const FAILED_TO_RESPOND_REASON = 'Peer failed to respond in time';
+
 const EVICTED_PEER_CODE = 4418;
 
 module.exports = {
@@ -60,5 +63,7 @@ module.exports = {
   FORBIDDEN_CONNECTION_REASON,
   DUPLICATE_CONNECTION,
   DUPLICATE_CONNECTION_REASON,
+  FAILED_TO_RESPOND,
+  FAILED_TO_RESPOND_REASON,
   EVICTED_PEER_CODE,
 };

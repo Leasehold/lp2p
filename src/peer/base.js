@@ -17,6 +17,8 @@ const { EventEmitter } = require('events');
 const {
   FORBIDDEN_CONNECTION,
   FORBIDDEN_CONNECTION_REASON,
+  FAILED_TO_RESPOND,
+  FAILED_TO_RESPOND_REASON,
 } = require('../disconnect_status_codes');
 const { RPCResponseError } = require('../errors');
 const { P2PRequest } = require('../p2p_request');
@@ -370,10 +372,11 @@ class Peer extends EventEmitter {
   async request(packet) {
     return new Promise(
       (resolve, reject) => {
-        if (!this._socket) {
+        let socket = this._socket;
+        if (!socket) {
           throw new Error('Peer socket does not exist');
         }
-        this._socket.emit(
+        socket.emit(
           REMOTE_EVENT_RPC_REQUEST,
           {
             type: '/RPCRequest',
@@ -383,6 +386,10 @@ class Peer extends EventEmitter {
           (err, responseData) => {
             if (err) {
               reject(err);
+
+              if (err.name === 'TimeoutError') {
+                this.disconnect(FAILED_TO_RESPOND, FAILED_TO_RESPOND_REASON);
+              }
 
               return;
             }
