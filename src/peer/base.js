@@ -346,7 +346,7 @@ class Peer extends EventEmitter {
   disconnect(code = 1000, reason) {
     clearInterval(this._counterResetInterval);
     clearInterval(this._productivityResetInterval);
-    if (this._socket) {
+    if (this._socket && this._socket.active) {
       this._socket.destroy(code, reason);
     }
   }
