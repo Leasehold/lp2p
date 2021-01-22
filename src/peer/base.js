@@ -98,6 +98,7 @@ class Peer extends EventEmitter {
       ipAddress: this._ipAddress,
       wsPort: this._wsPort,
     });
+    this._active = true;
     this._height = peerInfo.height ? peerInfo.height : 0;
     this._reputation = DEFAULT_REPUTATION_SCORE;
     this._netgroup = getNetgroup(this._ipAddress, peerConfig.secret);
@@ -344,10 +345,13 @@ class Peer extends EventEmitter {
   }
 
   disconnect(code = 1000, reason) {
-    clearInterval(this._counterResetInterval);
-    clearInterval(this._productivityResetInterval);
-    if (this._socket && this._socket.active) {
-      this._socket.destroy(code, reason);
+    if (this._active) {
+      this._active = false;
+      clearInterval(this._counterResetInterval);
+      clearInterval(this._productivityResetInterval);
+      if (this._socket && this._socket.active) {
+        this._socket.destroy(code, reason);
+      }
     }
   }
 
