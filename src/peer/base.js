@@ -392,7 +392,9 @@ class Peer extends EventEmitter {
               reject(err);
 
               if (err.name === 'TimeoutError') {
-                this.disconnect(FAILED_TO_RESPOND, FAILED_TO_RESPOND_REASON);
+                setTimeout(() => {
+                  this.disconnect(FAILED_TO_RESPOND, FAILED_TO_RESPOND_REASON);
+                }, 0);
               }
 
               return;
