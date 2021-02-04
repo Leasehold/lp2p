@@ -1771,7 +1771,7 @@ describe('Integration tests for P2P library', () => {
     });
 
     describe('Peer outbound shuffling', () => {
-      it('should shuffle outbound peers in an interval', async () => { // TODO 222
+      it('should shuffle outbound peers in an interval', async () => {
         const p2pNode = p2pNodeList[0];
         const { outboundCount } = p2pNode['_peerPool'].getPeersCountPerKind();
         // Wait for periodic shuffling
