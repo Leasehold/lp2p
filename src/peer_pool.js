@@ -363,6 +363,7 @@ class PeerPool extends EventEmitter {
       moduleCount = 1;
     }
     const inboundPeers = this.getPeers(PEER_KIND_INBOUND);
+
     if (inboundPeers.length >= this._maxInboundConnections * moduleCount) {
       this._evictPeer(PEER_KIND_INBOUND);
     }
@@ -479,10 +480,10 @@ class PeerPool extends EventEmitter {
       peer.disconnect(code, reason);
       this._unbindHandlersFromPeer(peer);
     }
-
+    let wasRemoved = this._peerMap.delete(peerId);
     this.emit(EVENT_REMOVE_PEER, peerId);
 
-    return this._peerMap.delete(peerId);
+    return wasRemoved;
   }
 
   applyPenalty(peerPenalty) {

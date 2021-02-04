@@ -25,9 +25,9 @@
   "main": "src/index.js",
   "scripts": {
     "clean": "./scripts/clean.sh",
-    "test": "mocha test/{,/**/}{,/**/}/*.js --timeout 10000",
+    "test": "mocha test/{,/**/}{,/**/}/*.js --timeout 15000",
     "test:unit": "mocha test/unit/{,/**/}/*.js",
-    "test:integration": "mocha test/integration/{,/**/}/*.js --timeout 5000",
+    "test:integration": "mocha test/integration/{,/**/}/*.js --timeout 15000",
     "enableLocalIPs": "sudo ./scripts/enableTestLocalIPs.sh 10 19"
   },
   "dependencies": {
