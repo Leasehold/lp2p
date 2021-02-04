@@ -169,7 +169,7 @@ class P2P extends EventEmitter {
           wsPort: foundTriedPeer.wsPort,
         };
         this._peerBook.upgradePeer(updatedPeerInfo);
-      } else {
+      } else if (!peerInfo.isPassive) {
         this._peerBook.addPeer(peerInfo);
         // Should be added to newPeer list first and since it is connected so we will upgrade it
         this._peerBook.upgradePeer(peerInfo);
@@ -224,7 +224,7 @@ class P2P extends EventEmitter {
           // If found and updated successfully then upgrade the peer
           this._peerBook.upgradePeer(updatedPeerInfo);
         }
-      } else {
+      } else if (!peerInfo.isPassive) {
         this._peerBook.addPeer(peerInfo);
         // Since the connection is tried already hence upgrade the peer
         this._peerBook.upgradePeer(peerInfo);
@@ -299,7 +299,7 @@ class P2P extends EventEmitter {
             // If found and updated successfully then upgrade the peer
             this._peerBook.upgradePeer(updatedPeerInfo);
           }
-        } else {
+        } else if (!detailedPeerInfo.isPassive) {
           this._peerBook.addPeer(detailedPeerInfo);
           // Re-emit the message to allow it to bubble up the class hierarchy.
           // Only emit event when a peer is discovered for the first time.
@@ -405,11 +405,13 @@ class P2P extends EventEmitter {
     // Add peers to tried peers if want to re-use previously tried peers
     if (this._sanitizedPeerLists.previousPeers) {
       this._sanitizedPeerLists.previousPeers.forEach(peerInfo => {
-        if (!this._peerBook.getPeer(peerInfo)) {
-          this._peerBook.addPeer(peerInfo);
-          this._peerBook.upgradePeer(peerInfo);
-        } else {
-          this._peerBook.upgradePeer(peerInfo);
+        if (!peerInfo.isPassive) {
+          if (!this._peerBook.getPeer(peerInfo)) {
+            this._peerBook.addPeer(peerInfo);
+            this._peerBook.upgradePeer(peerInfo);
+          } else {
+            this._peerBook.upgradePeer(peerInfo);
+          }
         }
       });
     }
@@ -466,18 +468,12 @@ class P2P extends EventEmitter {
   getDisconnectedPeers() {
     const allPeers = this._peerBook.getAllPeers();
     const connectedPeers = this.getConnectedPeers();
-    const disconnectedPeers = allPeers.filter(peer => {
-      if (
-        connectedPeers.find(
-          connectedPeer =>
-            peer.ipAddress === connectedPeer.ipAddress &&
-            peer.wsPort === connectedPeer.wsPort,
-        )
-      ) {
-        return false;
-      }
-
-      return true;
+    const connectedPeerIdSet = new Set(
+      connectedPeers.map(peerInfo => constructPeerIdFromPeerInfo(peerInfo))
+    );
+    const disconnectedPeers = allPeers.filter(peerInfo => {
+      const peerId = constructPeerIdFromPeerInfo(peerInfo);
+      return !connectedPeerIdSet.has(peerId);
     });
 
     return disconnectedPeers;
@@ -567,7 +563,7 @@ class P2P extends EventEmitter {
         }
 
         if (
-          typeof queryObject.wsPort !== 'string' ||
+          (!queryObject.isPassive && typeof queryObject.wsPort !== 'string') ||
           typeof queryObject.version !== 'string' ||
           typeof queryObject.nethash !== 'string'
         ) {
@@ -580,7 +576,12 @@ class P2P extends EventEmitter {
           return;
         }
 
-        const wsPort = parseInt(queryObject.wsPort, BASE_10_RADIX);
+        let wsPort;
+        if (queryObject.isPassive) {
+          wsPort = socket.remotePort;
+        } else {
+          wsPort = parseInt(queryObject.wsPort, BASE_10_RADIX);
+        }
         const peerId = constructPeerIdFromPeerInfo({
           ipAddress: socket.remoteAddress,
           wsPort,
@@ -657,7 +658,10 @@ class P2P extends EventEmitter {
           this.emit(EVENT_NEW_PEER, incomingPeerInfo);
         }
 
-        if (!this._peerBook.getPeer(incomingPeerInfo)) {
+        if (
+          !incomingPeerInfo.isPassive &&
+          !this._peerBook.getPeer(incomingPeerInfo)
+        ) {
           this._peerBook.addPeer(incomingPeerInfo);
         }
       },
@@ -806,7 +810,7 @@ class P2P extends EventEmitter {
       this._sanitizedPeerLists.whitelisted,
     );
     newPeersToAdd.forEach(newPeerInfo => {
-      if (!this._peerBook.getPeer(newPeerInfo)) {
+      if (!newPeerInfo.isPassive && !this._peerBook.getPeer(newPeerInfo)) {
         this._peerBook.addPeer(newPeerInfo);
       }
     });

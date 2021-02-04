@@ -210,7 +210,9 @@ class PeerPool extends EventEmitter {
     this._nodeInfo = nodeInfo;
     const peerList = this.getPeers();
     peerList.forEach(peer => {
-      this._applyNodeInfoOnPeer(peer, nodeInfo);
+      if (!peer.peerInfo.isPassive) {
+        this._applyNodeInfoOnPeer(peer, nodeInfo);
+      }
     });
   }
 
@@ -375,7 +377,7 @@ class PeerPool extends EventEmitter {
     }
     this._peerMap.set(peer.id, peer);
     this._bindHandlersToPeer(peer);
-    if (this._nodeInfo) {
+    if (this._nodeInfo && !peer.peerInfo.isPassive) {
       this._applyNodeInfoOnPeer(peer, this._nodeInfo);
     }
     peer.connect();

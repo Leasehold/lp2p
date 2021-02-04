@@ -1722,7 +1722,8 @@ describe('Integration tests for P2P library', () => {
   describe('Network with frequent peer shuffling', () => {
     const NETWORK_PEER_COUNT_SHUFFLING = 10;
     const POPULATOR_INTERVAL_SHUFFLING = 10000;
-    const OUTBOUND_SHUFFLE_INTERVAL = 500;
+    const OUTBOUND_SHUFFLE_INTERVAL_FIRST_NODE = 500;
+    const OUTBOUND_SHUFFLE_INTERVAL_OTHER_NODES = 10000;
     beforeEach(async () => {
       p2pNodeList = [...new Array(NETWORK_PEER_COUNT_SHUFFLING).keys()].map(
         index => {
@@ -1738,16 +1739,17 @@ describe('Integration tests for P2P library', () => {
             .filter(seedPeer => seedPeer.wsPort !== nodePort);
 
           return new P2P({
-            connectTimeout: 200,
-            ackTimeout: 200,
+            connectTimeout: 300,
+            ackTimeout: 300,
             seedPeers,
             wsEngine: 'ws',
             populatorInterval: POPULATOR_INTERVAL_SHUFFLING,
-            maxOutboundConnections: Math.round(
-              NETWORK_PEER_COUNT_SHUFFLING / 2,
+            maxOutboundConnections: index > 0 ? 0 : Math.round(
+              NETWORK_PEER_COUNT_SHUFFLING,
             ),
-            maxInboundConnections: Math.round(NETWORK_PEER_COUNT_SHUFFLING / 2),
-            outboundShuffleInterval: OUTBOUND_SHUFFLE_INTERVAL,
+            maxInboundConnections: NETWORK_PEER_COUNT_SHUFFLING,
+            outboundShuffleInterval: index > 0 ?
+              OUTBOUND_SHUFFLE_INTERVAL_OTHER_NODES : OUTBOUND_SHUFFLE_INTERVAL_FIRST_NODE,
             nodeInfo: {
               wsPort: nodePort,
               nethash:
@@ -1769,7 +1771,7 @@ describe('Integration tests for P2P library', () => {
     });
 
     describe('Peer outbound shuffling', () => {
-      it('should shuffle outbound peers in an interval', async () => {
+      it('should shuffle outbound peers in an interval', async () => { // TODO 222
         const p2pNode = p2pNodeList[0];
         const { outboundCount } = p2pNode['_peerPool'].getPeersCountPerKind();
         // Wait for periodic shuffling
