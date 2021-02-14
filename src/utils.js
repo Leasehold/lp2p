@@ -52,13 +52,13 @@ const getIPGroup = (address, groupNumber) => {
 // Each byte represents the corresponding subsection of the IP address e.g. AAA.BBB.CCC.DDD
 const getIPBytes = (address) => {
   const aBytes = Buffer.alloc(PREFIX_BUFFER_LENGTH);
-  aBytes.writeUInt8(getIPGroup(address, 0), 0);
+  aBytes.fill(getIPGroup(address, 0), 0);
   const bBytes = Buffer.alloc(PREFIX_BUFFER_LENGTH);
-  bBytes.writeUInt8(getIPGroup(address, 1), 0);
+  bBytes.fill(getIPGroup(address, 1), 0);
   const cBytes = Buffer.alloc(PREFIX_BUFFER_LENGTH);
-  cBytes.writeUInt8(getIPGroup(address, 2), 0);
+  cBytes.fill(getIPGroup(address, 2), 0);
   const dBytes = Buffer.alloc(PREFIX_BUFFER_LENGTH);
-  dBytes.writeUInt8(getIPGroup(address, 3), 0);
+  dBytes.fill(getIPGroup(address, 3), 0);
 
   return {
     aBytes,

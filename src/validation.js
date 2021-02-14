@@ -28,14 +28,13 @@ const {
 const { constructPeerIdFromPeerInfo } = require('./utils');
 
 const IPV4_NUMBER = 4;
-const IPV6_NUMBER = 6;
 
 const getByteSize = (object) =>
   Buffer.byteLength(JSON.stringify(object));
 
 const validatePeerAddress = (ip, wsPort) => {
   if (
-    (!isIP(ip, IPV4_NUMBER) && !isIP(ip, IPV6_NUMBER)) ||
+    !isIP(ip, IPV4_NUMBER) ||
     !isPort(wsPort.toString())
   ) {
     return false;
